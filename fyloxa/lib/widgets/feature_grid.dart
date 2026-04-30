@@ -8,7 +8,7 @@ class FeatureGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primary = Color(0xFF2563EB); // 🔵 brand color
+    const primary = Color(0xFF2563EB);
     const light = Color(0xFFF8FAFC);
 
     return GridView.count(
@@ -20,10 +20,10 @@ class FeatureGrid extends StatelessWidget {
       childAspectRatio: 0.9,
       children: [
 
-        // 🔥 BOOK GYM (MAIN)
+        // 🔥 BOOK GYM
         FeatureCard(
           title: "Book Gym",
-          icon: Icons.location_on, // 📍 location based
+          icon: Icons.location_on,
           imagePath:
               "https://images.unsplash.com/photo-1534438327276-14e5300c3a48",
           isNetworkImage: true,
@@ -33,7 +33,7 @@ class FeatureGrid extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const BookGym(),
+                builder: (context) =>  BookScreen(),
               ),
             );
           },
@@ -42,7 +42,7 @@ class FeatureGrid extends StatelessWidget {
         // 🏋️ RENT EQUIPMENT
         FeatureCard(
           title: "Rent Equip",
-          icon: Icons.sports_gymnastics, // 🏋️ equipment feel
+          icon: Icons.sports_gymnastics,
           imagePath:
               "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61",
           isNetworkImage: true,
@@ -53,7 +53,7 @@ class FeatureGrid extends StatelessWidget {
         // 👨‍🏫 TRAINERS
         FeatureCard(
           title: "Trainers",
-          icon: Icons.person, // 👤 trainer
+          icon: Icons.person,
           imagePath:
               "https://images.unsplash.com/photo-1599058917212-d750089bc07e",
           isNetworkImage: true,
@@ -64,7 +64,7 @@ class FeatureGrid extends StatelessWidget {
         // 🥗 DIET PLAN
         FeatureCard(
           title: "Diet Plan",
-          icon: Icons.restaurant, // 🍽️ diet
+          icon: Icons.restaurant,
           imagePath:
               "https://images.unsplash.com/photo-1490645935967-10de6ba17061",
           isNetworkImage: true,
@@ -83,7 +83,7 @@ class FeatureGrid extends StatelessWidget {
         // 🧘 CLASSES
         FeatureCard(
           title: "Classes",
-          icon: Icons.self_improvement, // 🧘 yoga/classes
+          icon: Icons.self_improvement,
           imagePath:
               "https://images.unsplash.com/photo-1540497077202-7c8a3999166f",
           isNetworkImage: true,
@@ -94,7 +94,7 @@ class FeatureGrid extends StatelessWidget {
         // 📊 PROGRESS
         FeatureCard(
           title: "Progress",
-          icon: Icons.show_chart, // 📈 analytics
+          icon: Icons.show_chart,
           imagePath:
               "https://images.unsplash.com/photo-1554284126-aa88f22d8b74",
           isNetworkImage: true,

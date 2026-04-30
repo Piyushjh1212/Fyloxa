@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'map_screen.dart';
 
-class BookGym extends StatefulWidget {
-  const BookGym({super.key});
+import '../trial_book/book_screen.dart';
+
+class BookScreen extends StatefulWidget {
+  const BookScreen({super.key});
 
   @override
-  State<BookGym> createState() => _BookGymState();
+  State<BookScreen> createState() => _BookScreenState();
 }
 
-class _BookGymState extends State<BookGym> {
+class _BookScreenState extends State<BookScreen> {
   String selectedState = "Madhya Pradesh";
   String selectedDistrict = "Bhopal";
   bool showNearby = false;
 
-  final Color brandColor = const Color(0xFF2563EB);
-
-  final Color textPrimary = const Color(0xFF111827);
-  final Color textSecondary = const Color(0xFF6B7280);
-  final Color bg = Colors.white;
+  final Color primary = const Color(0xFF2563EB);
+  final Color black = const Color(0xFF111827);
+  final Color grey = const Color(0xFF6B7280);
   final Color cardBg = const Color(0xFFF9FAFB);
   final Color border = const Color(0xFFE5E7EB);
 
@@ -29,8 +28,6 @@ class _BookGymState extends State<BookGym> {
       "distance": 1.2,
       "price": "₹999/month",
       "rating": 4.8,
-      "lat": 23.2599,
-      "lng": 77.4126,
       "image":
           "https://images.unsplash.com/photo-1534438327276-14e5300c3a48",
     },
@@ -40,8 +37,6 @@ class _BookGymState extends State<BookGym> {
       "distance": 2.0,
       "price": "₹699/month",
       "rating": 4.5,
-      "lat": 23.2500,
-      "lng": 77.4300,
       "image":
           "https://images.unsplash.com/photo-1517836357463-d25dfeac3438",
     },
@@ -58,16 +53,16 @@ class _BookGymState extends State<BookGym> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: bg,
+      backgroundColor: Colors.white,
 
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: IconThemeData(color: textPrimary),
+        iconTheme: IconThemeData(color: black),
         title: Text(
           "Book Gym",
           style: TextStyle(
-            color: textPrimary,
+            color: black,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -76,38 +71,35 @@ class _BookGymState extends State<BookGym> {
       body: Column(
         children: [
 
-          // FILTER BAR
+          /// FILTER
           Padding(
             padding: const EdgeInsets.all(12),
             child: Row(
               children: [
-                Expanded(child: selectorBox(selectedState)),
+                Expanded(child: _filterBox(selectedState)),
                 const SizedBox(width: 8),
-                Expanded(child: selectorBox(selectedDistrict)),
+                Expanded(child: _filterBox(selectedDistrict)),
               ],
             ),
           ),
 
-          // NEARBY SWITCH
           SwitchListTile(
             value: showNearby,
             onChanged: (v) => setState(() => showNearby = v),
-            title: Text(
-              "Nearby Gyms",
-              style: TextStyle(
-                color: textPrimary,
-                fontWeight: FontWeight.w500,
-              ),
+            title: Text("Nearby Gyms", style: TextStyle(color: black)),
+            subtitle: Text(
+              "Show gyms within 3km radius",
+              style: TextStyle(color: grey, fontSize: 12),
             ),
-            activeColor: brandColor,
+            activeColor: primary,
           ),
 
           Expanded(
             child: ListView.builder(
-              itemCount: filteredGyms.length,
               padding: const EdgeInsets.all(16),
+              itemCount: filteredGyms.length,
               itemBuilder: (context, index) {
-                return gymCard(filteredGyms[index]);
+                return _gymCard(filteredGyms[index]);
               },
             ),
           ),
@@ -116,10 +108,10 @@ class _BookGymState extends State<BookGym> {
     );
   }
 
-  // FILTER BOX
-  Widget selectorBox(String text) {
+  /// FILTER BOX
+  Widget _filterBox(String text) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: cardBg,
         borderRadius: BorderRadius.circular(10),
@@ -128,33 +120,27 @@ class _BookGymState extends State<BookGym> {
       child: Text(
         text,
         style: TextStyle(
+          color: black,
           fontWeight: FontWeight.w500,
-          color: textPrimary,
         ),
       ),
     );
   }
 
-  // GYM CARD
-  Widget gymCard(Map<String, dynamic> gym) {
+  /// GYM CARD
+  Widget _gymCard(Map<String, dynamic> gym) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: border),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 12,
-            color: Colors.black.withOpacity(0.04),
-            offset: const Offset(0, 6),
-          )
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
+          /// IMAGE
           ClipRRect(
             borderRadius:
                 const BorderRadius.vertical(top: Radius.circular(16)),
@@ -172,153 +158,154 @@ class _BookGymState extends State<BookGym> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
 
+                /// TITLE
                 Text(
                   gym["name"],
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
                     fontSize: 16,
-                    color: textPrimary,
+                    fontWeight: FontWeight.bold,
+                    color: black,
                   ),
                 ),
 
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
 
+                /// LOCATION + PREMIUM BUTTON
                 Row(
                   children: [
-                    Icon(Icons.location_on,
-                        size: 14, color: textSecondary),
-                    const SizedBox(width: 4),
-                    Text(
-                      "${gym["distance"]} km",
-                      style: TextStyle(color: textSecondary),
+                    Icon(
+                      Icons.location_on,
+                      size: 14,
+                      color: grey,
                     ),
-                    const Spacer(),
-                    const Icon(Icons.star,
-                        size: 14, color: Colors.orange),
+
                     const SizedBox(width: 4),
+
                     Text(
-                      "${gym["rating"]}",
-                      style: TextStyle(color: textSecondary),
+                      "${gym["distance"]} km away",
+                      style: TextStyle(
+                        color: grey,
+                        fontSize: 12,
+                      ),
+                    ),
+
+                    const Spacer(),
+
+                    /// 🔥 PREMIUM LOCATION BUTTON
+                    GestureDetector(
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Opening Map Location..."),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade50,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Colors.blue.shade100,
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.location_on,
+                              size: 16,
+                              color: Colors.blueAccent,
+                            ),
+                            SizedBox(width: 5),
+                            Text(
+                              "View Location",
+                              style: TextStyle(
+                                color: Colors.blueAccent,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
 
                 const SizedBox(height: 8),
 
-                Text(
-                  gym["price"],
-                  style: TextStyle(
-                    color: brandColor,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-
-                const SizedBox(height: 10),
-
-                // BUTTONS
+                /// RATING + PRICE
                 Row(
                   children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: border),
-                          foregroundColor: textPrimary,
-                        ),
-                        onPressed: () {},
-                        child: const Text("Trial"),
-                      ),
+                    const Icon(Icons.star,
+                        size: 14, color: Colors.orange),
+
+                    const SizedBox(width: 4),
+
+                    Text(
+                      "${gym["rating"]}",
+                      style: TextStyle(color: grey, fontSize: 12),
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: brandColor,
-                          foregroundColor: Colors.white,
-                        ),
-                        onPressed: () {},
-                        child: const Text("Book"),
+
+                    const Spacer(),
+
+                    Text(
+                      gym["price"],
+                      style: TextStyle(
+                        color: primary,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
                 ),
 
-                locationCTA(gym),
+                const SizedBox(height: 12),
+
+                /// BUTTONS
+                Row(
+                  children: [
+
+                    Expanded(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: primary),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {},
+                        child: Text(
+                          "Trial",
+                          style: TextStyle(color: primary),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 10),
+
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {},
+                        child: const Text(
+                          "Book Now",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
-          )
-        ],
-      ),
-    );
-  }
-
-  // LOCATION CTA
-  Widget locationCTA(Map<String, dynamic> gym) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => MapScreen(
-              gymName: gym["name"],
-              gymLat: gym["lat"],
-              gymLng: gym["lng"],
-            ),
           ),
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.only(top: 12),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: cardBg,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: border),
-        ),
-        child: Row(
-          children: [
-
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: brandColor.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(Icons.location_on,
-                  color: brandColor),
-            ),
-
-            const SizedBox(width: 10),
-
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "View Location",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    "Open in map",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 14,
-              color: textSecondary,
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
