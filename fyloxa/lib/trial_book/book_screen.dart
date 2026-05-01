@@ -42,7 +42,7 @@ class GymDetailPage extends StatelessWidget {
           ),
           onPressed: () {},
           child: Text(
-            "🔥 Buy Now • ${gym["price"]}",
+            " Buy Now  ${gym["price"]}",
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -222,12 +222,12 @@ class GymDetailPage extends StatelessWidget {
                 spacing: 10,
                 runSpacing: 10,
                 children: const [
-                  _feature("🏋️ Gym"),
-                  _feature("🧘 Yoga"),
-                  _feature("🥤 Nutrition"),
-                  _feature("🚿 Shower"),
-                  _feature("🧑‍🏫 Trainer"),
-                  _feature("❄️ AC"),
+                  _feature(" Gym"),
+                  _feature(" Yoga"),
+                  _feature(" Nutrition"),
+                  _feature(" Shower"),
+                  _feature(" Trainer"),
+                  _feature(" AC"),
                 ],
               ),
             ),

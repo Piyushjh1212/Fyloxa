@@ -10,18 +10,19 @@ class LoginCard extends StatefulWidget {
 }
 
 class _LoginCardState extends State<LoginCard> {
-  final PageController _controller = PageController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController otpController = TextEditingController();
 
-  int currentIndex = 0;
   bool otpSent = false;
   bool loading = false;
 
+  final PageController _pageController = PageController();
+  int currentPage = 0;
+
   final List<String> images = [
-    "https://res.cloudinary.com/dieboinjz/image/upload/v1777550713/INDIA_S_GYM_BOOKING_APP_2_smtjjg.png",
-    "https://res.cloudinary.com/dieboinjz/image/upload/v1777318096/GacImages/cyz3mxrdqwcpjiazwrnr.jpg",
-    "https://res.cloudinary.com/dieboinjz/image/upload/v1777318096/GacImages/cyz3mxrdqwcpjiazwrnr.jpg",
+    "https://res.cloudinary.com/dieboinjz/image/upload/v1777622582/ChatGPT_Image_May_1_2026_01_25_24_PM_kgmsm2.png",
+    "https://res.cloudinary.com/dieboinjz/image/upload/v1777622582/ChatGPT_Image_May_1_2026_01_25_24_PM_kgmsm2.png",
+    "https://res.cloudinary.com/dieboinjz/image/upload/v1777622582/ChatGPT_Image_May_1_2026_01_25_24_PM_kgmsm2.png",
   ];
 
   void sendOTP() async {
@@ -43,282 +44,306 @@ class _LoginCardState extends State<LoginCard> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Invalid OTP ")),
+        const SnackBar(content: Text("Invalid OTP")),
       );
     }
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    phoneController.dispose();
-    otpController.dispose();
-    super.dispose();
+  void showEmailLoginSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
+      isScrollControlled: true,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "Login with Email",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 15),
+
+              TextField(
+                decoration: InputDecoration(
+                  hintText: "Enter Email",
+                  prefixIcon: const Icon(Icons.email_outlined),
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              TextField(
+                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: "Password",
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 15),
+
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text("Login"),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
-    final imageHeight = h;
 
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-
-          // 🔥 BACKGROUND SWIPE IMAGES
+          // 🔥 IMAGE SWIPER SECTION
           SizedBox(
-            height: imageHeight,
+            height: h * 0.65,
             width: double.infinity,
-            child: PageView.builder(
-              controller: _controller,
-              physics: const BouncingScrollPhysics(),
-              itemCount: images.length,
-              onPageChanged: (i) => setState(() => currentIndex = i),
-              itemBuilder: (context, index) {
-                return Image.network(
-                  images[index],
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                );
-              },
-            ),
-          ),
-
-          // 🔥 DARK OVERLAY
-          Container(
-            height: imageHeight,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.transparent,
-                  Colors.black.withOpacity(0.65),
-                ],
-              ),
-            ),
-          ),
-
-          // 🔥 DOTS INDICATOR
-          Positioned(
-            top: imageHeight - 40,
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(images.length, (i) {
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: currentIndex == i ? 18 : 6,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: currentIndex == i
-                        ? Colors.white
-                        : Colors.white54,
-                    borderRadius: BorderRadius.circular(20),
+            child: Column(
+              children: [
+                Expanded(
+                  child: PageView.builder(
+                    controller: _pageController,
+                    itemCount: images.length,
+                    onPageChanged: (index) {
+                      setState(() {
+                        currentPage = index;
+                      });
+                    },
+                    itemBuilder: (context, index) {
+                      return Image.network(
+                        images[index],
+                        fit: BoxFit.contain,
+                      );
+                    },
                   ),
-                );
-              }),
+                ),
+
+                const SizedBox(height: 10),
+
+                // 🔥 DOT INDICATOR
+// 🔥 DOT INDICATOR (FIXED)
+Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: List.generate(images.length, (index) {
+    final isActive = currentPage == index;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      height: 8,
+      width: isActive ? 24 : 8,
+      decoration: BoxDecoration(
+        color: isActive
+            ? Colors.white
+            : Colors.white.withOpacity(0.35),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: isActive
+            ? [
+                BoxShadow(
+                  color: Colors.white24,
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                )
+              ]
+            : null,
+      ),
+    );
+  }),
+),
+              ],
             ),
           ),
 
           // 🔥 LOGIN CARD
           Align(
             alignment: Alignment.bottomCenter,
-            child: Container(
-              width: double.infinity,
-              height: h * 0.45,
-              padding: const EdgeInsets.all(20),
-
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(28),
-                  topRight: Radius.circular(28),
+            child: SingleChildScrollView(
+              child: Container(
+                margin: EdgeInsets.only(top: h * 0.35),
+                padding: const EdgeInsets.all(20),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
                 ),
-              ),
-
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-
-                  const Text(
-                    "Welcome to Fyloxa 💪",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-
-                  const SizedBox(height: 6),
-
-                  Text(
-                    otpSent
-                        ? "Enter OTP sent to your number"
-                        : "Login to continue your fitness journey",
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: Colors.black54,
-                    ),
-                  ),
-
-                  const SizedBox(height: 18),
-
-                  // 🔥 INPUT
-                  TextField(
-                    controller: otpSent
-                        ? otpController
-                        : phoneController,
-                    keyboardType: TextInputType.phone,
-                    style: const TextStyle(color: Colors.black),
-
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        otpSent ? Icons.lock : Icons.phone,
-                        color: Colors.black54,
-                      ),
-                      hintText: otpSent
-                          ? "Enter OTP"
-                          : "Enter Mobile Number",
-                      hintStyle:
-                          const TextStyle(color: Colors.black45),
-                      filled: true,
-                      fillColor: Colors.grey.shade100,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
-                        borderSide: BorderSide.none,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      otpSent ? "Verify OTP " : "Welcome Back ",
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
 
-                  const SizedBox(height: 14),
+                    const SizedBox(height: 6),
 
-                  // 🔥 BUTTON
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
+                    Text(
+                      otpSent
+                          ? "Enter OTP sent to your number"
+                          : "Login to continue your fitness journey",
+                      style: const TextStyle(color: Colors.black54),
+                    ),
+
+                    const SizedBox(height: 18),
+
+                    TextField(
+                      controller: otpSent ? otpController : phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(
+                          otpSent ? Icons.lock : Icons.phone,
+                        ),
+                        hintText: otpSent
+                            ? "Enter OTP"
+                            : "Enter Mobile Number",
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                        border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide.none,
                         ),
                       ),
-                      onPressed: loading
-                          ? null
-                          : (otpSent ? verifyOTP : sendOTP),
-
-                      child: loading
-                          ? const CircularProgressIndicator(
-                              color: Colors.white,
-                            )
-                          : Text(
-                              otpSent ? "VERIFY OTP" : "SEND OTP",
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
                     ),
-                  ),
 
-                  const SizedBox(height: 16),
+                    const SizedBox(height: 14),
 
-                  // 🔥 SOCIAL LOGIN
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-
-                      GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                                color: Colors.grey.shade300),
-                          ),
-                          child: Image.network(
-                            "https://cdn-icons-png.flaticon.com/512/2991/2991148.png",
-                            height: 26,
-                            width: 26,
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
                           ),
                         ),
+                        onPressed:
+                            loading ? null : (otpSent ? verifyOTP : sendOTP),
+                        child: loading
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            :Text(
+  otpSent ? "VERIFY OTP" : "SEND OTP",
+  style: const TextStyle(
+    color: Colors.white,
+    fontWeight: FontWeight.w600,
+  ),
+),
                       ),
+                    ),
 
-                      const SizedBox(width: 20),
+                    const SizedBox(height: 18),
 
-                      GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                                color: Colors.grey.shade300),
-                          ),
-                          child: const Icon(
-                            Icons.email_outlined,
-                            size: 26,
-                            color: Colors.black,
+                    const Center(
+                      child: Text(
+                        "Or continue with",
+                        style: TextStyle(color: Colors.black45),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                              border: Border.all(color: Colors.grey.shade300),
+                            ),
+                            child: Image.network(
+                              "https://cdn-icons-png.flaticon.com/512/2991/2991148.png",
+                              height: 24,
+                              width: 24,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
 
-                  const SizedBox(height: 14),
+                        const SizedBox(width: 20),
 
-                  // 🔥 TERMS
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10),
-                    child: RichText(
-                      textAlign: TextAlign.center,
-                      text: const TextSpan(
+                        GestureDetector(
+                          onTap: () {
+                            showEmailLoginSheet(context);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.grey.shade100,
+                            ),
+                            child: const Icon(
+                              Icons.email_outlined,
+                              size: 24,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 18),
+
+                    const Center(
+                      child: Text(
+                        "By continuing, you agree to our Terms of Service and Privacy Policy",
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.black54,
                         ),
-                        children: [
-                          TextSpan(
-                              text:
-                                  "By continuing, you agree to our "),
-                          TextSpan(
-                            text: "Terms of Service",
-                            style: TextStyle(
-                              decoration:
-                                  TextDecoration.underline,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          TextSpan(text: ", "),
-                          TextSpan(
-                            text: "Privacy Policy",
-                            style: TextStyle(
-                              decoration:
-                                  TextDecoration.underline,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          TextSpan(text: " and "),
-                          TextSpan(
-                            text: "Content Policy",
-                            style: TextStyle(
-                              decoration:
-                                  TextDecoration.underline,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          TextSpan(text: "."),
-                        ],
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-
-import '../trial_book/book_screen.dart';
+import '../trial_book/book_screen.dart'; // GymDetailPage
+import '../trial_book/trial_booking_screen.dart'; // TrialBookingScreen 
 
 class BookScreen extends StatefulWidget {
   const BookScreen({super.key});
@@ -50,6 +50,12 @@ class _BookScreenState extends State<BookScreen> {
     }).toList();
   }
 
+  String _getTag(Map gym) {
+    if (gym["rating"] >= 4.7) return "🔥 Popular";
+    if (gym["rating"] >= 4.5) return "⭐ Top Rated";
+    return "💪 Recommended";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,7 +77,6 @@ class _BookScreenState extends State<BookScreen> {
       body: Column(
         children: [
 
-          /// FILTER
           Padding(
             padding: const EdgeInsets.all(12),
             child: Row(
@@ -108,7 +113,6 @@ class _BookScreenState extends State<BookScreen> {
     );
   }
 
-  /// FILTER BOX
   Widget _filterBox(String text) {
     return Container(
       padding: const EdgeInsets.all(12),
@@ -127,7 +131,6 @@ class _BookScreenState extends State<BookScreen> {
     );
   }
 
-  /// GYM CARD
   Widget _gymCard(Map<String, dynamic> gym) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -140,16 +143,42 @@ class _BookScreenState extends State<BookScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
-          /// IMAGE
-          ClipRRect(
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(16)),
-            child: CachedNetworkImage(
-              imageUrl: gym["image"],
-              height: 160,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(16)),
+                child: CachedNetworkImage(
+                  imageUrl: gym["image"],
+                  height: 160,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+
+              Positioned(
+                top: 10,
+                left: 10,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [primary, primary.withOpacity(0.7)],
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    _getTag(gym),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
 
           Padding(
@@ -158,7 +187,6 @@ class _BookScreenState extends State<BookScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
 
-                /// TITLE
                 Text(
                   gym["name"],
                   style: TextStyle(
@@ -170,87 +198,26 @@ class _BookScreenState extends State<BookScreen> {
 
                 const SizedBox(height: 8),
 
-                /// LOCATION + PREMIUM BUTTON
                 Row(
                   children: [
-                    Icon(
-                      Icons.location_on,
-                      size: 14,
-                      color: grey,
-                    ),
-
+                    Icon(Icons.location_on, size: 14, color: grey),
                     const SizedBox(width: 4),
-
-                    Text(
-                      "${gym["distance"]} km away",
-                      style: TextStyle(
-                        color: grey,
-                        fontSize: 12,
-                      ),
-                    ),
-
+                    Text("${gym["distance"]} km away",
+                        style: TextStyle(color: grey, fontSize: 12)),
                     const Spacer(),
-
-                    /// 🔥 PREMIUM LOCATION BUTTON
-                    GestureDetector(
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Opening Map Location..."),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.blue.shade100,
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.location_on,
-                              size: 16,
-                              color: Colors.blueAccent,
-                            ),
-                            SizedBox(width: 5),
-                            Text(
-                              "View Location",
-                              style: TextStyle(
-                                color: Colors.blueAccent,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                   ],
                 ),
 
                 const SizedBox(height: 8),
 
-                /// RATING + PRICE
                 Row(
                   children: [
                     const Icon(Icons.star,
                         size: 14, color: Colors.orange),
-
                     const SizedBox(width: 4),
-
-                    Text(
-                      "${gym["rating"]}",
-                      style: TextStyle(color: grey, fontSize: 12),
-                    ),
-
+                    Text("${gym["rating"]}",
+                        style: TextStyle(color: grey)),
                     const Spacer(),
-
                     Text(
                       gym["price"],
                       style: TextStyle(
@@ -263,10 +230,10 @@ class _BookScreenState extends State<BookScreen> {
 
                 const SizedBox(height: 12),
 
-                /// BUTTONS
                 Row(
                   children: [
 
+                    /// ✅ TRIAL FIXED
                     Expanded(
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
@@ -275,11 +242,17 @@ class _BookScreenState extends State<BookScreen> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        onPressed: () {},
-                        child: Text(
-                          "Trial",
-                          style: TextStyle(color: primary),
-                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  TrialBookingScreen(gym: gym),
+                            ),
+                          );
+                        },
+                        child: Text("Trial",
+                            style: TextStyle(color: primary)),
                       ),
                     ),
 
@@ -293,7 +266,15 @@ class _BookScreenState extends State<BookScreen> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  GymDetailPage(gym: gym),
+                            ),
+                          );
+                        },
                         child: const Text(
                           "Book Now",
                           style: TextStyle(color: Colors.white),
