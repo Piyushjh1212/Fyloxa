@@ -4,11 +4,18 @@ import '../screens/membership_screen.dart';
 class WorkoutCard extends StatelessWidget {
   const WorkoutCard({super.key});
 
-  // 👉 BRAND COLOR (change this according to logo)
-  final Color brandColor = const Color(0xFF2563EB); // example blue
+  final Color brandColor = const Color(0xFF2563EB);
 
   @override
   Widget build(BuildContext context) {
+    final List<String> features = [
+      "Access 20+ Premium Gyms",
+      "Priority personal trainer booking",
+      "Free equipment rental every session",
+      "Exclusive premium partner gyms",
+      "Priority 24/7 support",
+    ];
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 2),
       decoration: BoxDecoration(
@@ -26,7 +33,7 @@ class WorkoutCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
-          // IMAGE
+          /// 🔥 IMAGE
           ClipRRect(
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(20),
@@ -46,7 +53,7 @@ class WorkoutCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
 
-                // TITLE + PRICE
+                /// 🔥 TITLE + PRICE
                 Row(
                   children: [
                     const Expanded(
@@ -82,6 +89,7 @@ class WorkoutCard extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
+                /// 🔥 DESCRIPTION
                 const Text(
                   "Train anywhere in your city with full access to top gyms.",
                   style: TextStyle(
@@ -93,25 +101,35 @@ class WorkoutCard extends StatelessWidget {
 
                 const SizedBox(height: 12),
 
-                // FEATURE
-                Row(
-                  children: [
-                    Icon(Icons.check_circle,
-                        size: 16, color: brandColor),
-                    const SizedBox(width: 6),
-                    const Text(
-                      "Access 20+ Premium Gyms",
-                      style: TextStyle(
-                        color: Color(0xFF6B7280),
-                        fontSize: 12,
+                /// 🔥 FEATURES LIST
+                Column(
+                  children: features.map((text) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.check_circle,
+                              size: 16, color: brandColor),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              text,
+                              style: const TextStyle(
+                                color: Color(0xFF6B7280),
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                    );
+                  }).toList(),
                 ),
 
                 const SizedBox(height: 14),
 
-                // BUTTON
+                /// 🔥 BUTTON
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -127,7 +145,8 @@ class WorkoutCard extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const MembershipScreen(),
+                          builder: (context) =>
+                              const MembershipScreen(),
                         ),
                       );
                     },

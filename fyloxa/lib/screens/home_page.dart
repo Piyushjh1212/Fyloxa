@@ -4,6 +4,8 @@ import '../widgets/workout_card.dart';
 import '../widgets/feature_grid.dart';
 import '../banners/offer_banner.dart';
 import '../profilescreen/profile_screen.dart';
+import '../screens/scanner_screen.dart';
+import '../screens/history_screen.dart';
 import '../screens/setting_screen.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,20 +18,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentIndex = 0;
 
-  void openBanner() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const AppBanner(),
-    );
-  }
+  final Color primary = const Color(0xFF6366F1);
 
   void showNotifications() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.white,
         title: const Text("Notifications"),
         content: const Text("No new notifications 🚀"),
         actions: [
@@ -42,78 +36,138 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // 🔥 BRAND COLORS (LOGO MATCH)
-  final Color primary = const Color(0xFF6366F1); // Indigo
-  final Color secondary = const Color(0xFF22D3EE); // Cyan
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      // ================= APP BAR =================
-  appBar: AppBar(
-  backgroundColor: Colors.white,
-  elevation: 0,
-  centerTitle: false, // 🔥 left aligned (modern look)
+      /// ✅ APPBAR ONLY HOME
+      appBar: currentIndex == 0
+          ? AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              title: const Text(
+                "Fyloxa",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              actions: [
+                IconButton(
+                  onPressed: showNotifications,
+                  icon: const Icon(Icons.notifications_none,
+                      color: Colors.black),
+                ),
+              ],
+            )
+          : null,
 
-  title: const Text(
-    "Fyloxa",
-    style: TextStyle(
-      color: Colors.black,
-      fontWeight: FontWeight.w700,
-      fontSize: 20,
-      letterSpacing: 0.5,
-    ),
-  ),
-
-  actions: [
-    IconButton(
-      onPressed: showNotifications,
-      icon: const Icon(
-        Icons.notifications_none,
-        color: Colors.black,
-      ),
-    ),
-  ],
-),
-
-      // ================= BODY =================
+      /// ✅ BODY
       body: IndexedStack(
         index: currentIndex,
-        children: [
-          _homeScreen(),
-          _mapScreen(),
-          const ProfileScreen(),
-          const SettingScreen(),
+        children: const [
+          _HomeScreen(),
+          ProfileScreen(),
+          SettingScreen(),
+          HistoryScreen(),
         ],
       ),
 
-      // ================= BOTTOM NAV =================
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: (index) => setState(() => currentIndex = index),
-        backgroundColor: Colors.white,
-        selectedItemColor: primary, // 🔥 changed
-        unselectedItemColor: Colors.grey.shade500,
+      /// 🔥 SCANNER FAB
+      floatingActionButton: Container(
+        height: 65,
+        width: 65,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            colors: [Color(0xFF6366F1), Color(0xFF22D3EE)],
+          ),
+        ),
+        child: FloatingActionButton(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const ScannerScreen(),
+              ),
+            );
+          },
+          child: const Icon(Icons.qr_code_scanner,
+              size: 28, color: Colors.white),
+        ),
+      ),
+
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.centerDocked,
+
+      /// ✅ UPDATED BOTTOM NAV (WITH LABELS)
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8,
         elevation: 12,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.location_on), label: "Map"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.person), label: "Profile"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.settings), label: "Settings"),
-        ],
+        child: SizedBox(
+          height: 65,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+
+              /// HOME
+              _navItem(Icons.home, "Home", 0),
+
+              /// PROFILE
+              _navItem(Icons.person, "Profile", 1),
+
+              const SizedBox(width: 40),
+
+              /// SETTINGS
+              _navItem(Icons.settings, "Settings", 2),
+
+              /// HISTORY
+              _navItem(Icons.history, "History", 3),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  // ================= HOME =================
-  Widget _homeScreen() {
+  /// 🔥 NAV ITEM (ICON + TEXT)
+  Widget _navItem(IconData icon, String label, int index) {
+    final bool isActive = currentIndex == index;
+
+    return GestureDetector(
+      onTap: () => setState(() => currentIndex = index),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            color: isActive ? primary : Colors.grey,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: isActive ? primary : Colors.grey,
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 🔥 HOME SCREEN
+class _HomeScreen extends StatelessWidget {
+  const _HomeScreen();
+
+  @override
+  Widget build(BuildContext context) {
     return SafeArea(
       child: SingleChildScrollView(
         child: Column(
@@ -122,43 +176,29 @@ class _HomePageState extends State<HomePage> {
 
             const SizedBox(height: 10),
 
-            // ================= SEARCH =================
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: GestureDetector(
-                onTap: openBanner,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 14),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
-                        blurRadius: 8,
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.search,
-                          color: Colors.grey.shade600),
-                      const SizedBox(width: 10),
-                      Text(
-                        "Search nearby gyms...",
-                        style: TextStyle(
-                            color: Colors.grey.shade600),
-                      ),
-                    ],
-                  ),
+              child: Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.search, color: Colors.grey.shade600),
+                    const SizedBox(width: 10),
+                    Text(
+                      "Search nearby gyms...",
+                      style: TextStyle(color: Colors.grey.shade600),
+                    ),
+                  ],
                 ),
               ),
             ),
 
             const SizedBox(height: 20),
 
-            // ================= OFFER =================
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: OfferBanner(),
@@ -166,16 +206,13 @@ class _HomePageState extends State<HomePage> {
 
             const SizedBox(height: 20),
 
-            // ================= TEXT =================
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 "TRAIN HARD",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                ),
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold),
               ),
             ),
 
@@ -183,16 +220,12 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 "Build strength, track progress & dominate your fitness goals",
-                style: TextStyle(
-                  color: Colors.grey.shade600,
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: Colors.grey.shade600),
               ),
             ),
 
             const SizedBox(height: 20),
 
-            // ================= FEATURES =================
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: FeatureGrid(),
@@ -200,7 +233,6 @@ class _HomePageState extends State<HomePage> {
 
             const SizedBox(height: 20),
 
-            // ================= WORKOUT =================
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: WorkoutCard(),
@@ -209,16 +241,6 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 30),
           ],
         ),
-      ),
-    );
-  }
-
-  // ================= MAP =================
-  Widget _mapScreen() {
-    return Center(
-      child: Text(
-        "Map Screen",
-        style: TextStyle(color: Colors.grey.shade700),
       ),
     );
   }

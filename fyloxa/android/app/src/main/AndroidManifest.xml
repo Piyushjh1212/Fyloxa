@@ -1,14 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- ✅ LOCATION PERMISSIONS (IMPORTANT FOR MAP) -->
+    <!-- ✅ PERMISSIONS -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:label="fyloxa"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true"> 
 
         <activity
             android:name=".MainActivity"
@@ -35,7 +37,7 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
-        <!-- 🔥 GOOGLE MAPS API KEY (ADD YOUR KEY HERE) -->
+        <!-- 🔥 GOOGLE MAPS API KEY -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBSfSu5WtpMpYsx2mjLBHbpuoaaUSL2zB4"/>
